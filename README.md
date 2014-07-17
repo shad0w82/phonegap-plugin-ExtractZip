@@ -8,7 +8,7 @@ there are two methods:
 * extract(fileName, destination, successCB, failCB)
 * getTempDir(name, successCB, failCB)
 
-Added third method:
+Added third method [ANDROID ONLY!]:
 * extractFromArray(byteArray, destination, successCB, failCB)
 
 Installing
