@@ -28,14 +28,14 @@ Using
 		function onDeviceReady() {
 			document.body.style.background = 'red'
 			var xhr = new XMLHttpRequest();
-			xhr.open('GET', 'raw/'+path, true);
+			xhr.open('GET', 'pathToZip.zip', true);
 			xhr.responseType = 'arraybuffer';
-			xhr.overrideMimeType('text/plain; charset=x-user-defined'); //fetch db file as binary
+			xhr.overrideMimeType('text/plain; charset=x-user-defined'); //fetch zip file as binary
 			xhr.onload = function(e) {
-				window.dbFileuInt8Array = new Uint8Array(this.response);
+				window.zipFileuInt8Array = new Uint8Array(this.response);
 				ExtractZip.extractFromArray(
-		                    _arrayBufferToBase64(dbFileuInt8Array),
-		                    "/sdcard/DbDieta/raw/Jigsaw/", 
+		                    _arrayBufferToBase64(zipFileuInt8Array),
+		                    "/sdcard/newDir/", 
 		                    function(s) { //Success 
 		                    },
 		                    function(s) { //Fail
