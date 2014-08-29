@@ -1,4 +1,4 @@
-
+cordova.define("cordova.plugin.ExtractZip.ExtractZip", function(require, exports, module) { 
 /*
  * @author Evgeniy Lukovsky
  * */
@@ -25,3 +25,5 @@
 
 	module.exports= new ExtractZip();
 
+
+});

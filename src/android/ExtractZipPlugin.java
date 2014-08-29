@@ -6,11 +6,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import android.util.Log;
+import android.util.Base64;
 
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
@@ -24,8 +27,11 @@ import android.content.Context;
  *
  */
 public class ExtractZipPlugin extends CordovaPlugin {
+
+        private static final String TAG = "ExtractZip";
+
 	public enum Action{
-		extract, getTempDir
+		extract, extractArray, getTempDir
 	}
 
 	/**
@@ -48,15 +54,17 @@ public class ExtractZipPlugin extends CordovaPlugin {
 	 */
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-		System.out.println("ZIP plugin has been started");
+		Log.d(TAG, "ZIP plugin has been started");
 		boolean result = false;
+                final JSONArray _args = args;
+                Log.d(TAG, _args.toString());
+		final CallbackContext _callbackContext = callbackContext;
 
 		switch(Action.valueOf(action)){
 		case extract:
 			result = true;
 			// run "extractAll" threaded to support big files (e.g. > 100MByte)
-			final JSONArray _args = args;
-			final CallbackContext _callbackContext = callbackContext;
+			
 			cordova.getThreadPool().execute(new Runnable() {
 				public void run() {
 					extractAll(_args, _callbackContext);
@@ -65,8 +73,7 @@ public class ExtractZipPlugin extends CordovaPlugin {
 		break;
                 case extractArray:
 			result = true;
-			final JSONArray _args = args;
-			final CallbackContext _callbackContext = callbackContext;
+                        
 			cordova.getThreadPool().execute(new Runnable() {
 				public void run() {
 					extractBytearray(_args, _callbackContext);
@@ -114,8 +121,8 @@ public class ExtractZipPlugin extends CordovaPlugin {
 						copyInputStream(is, os);
 					}
 					catch(IOException e2){
-						System.out.println("Can't write file.");
-						System.out.println(e2.getMessage());
+						Log.d(TAG, "Can't write file.");
+						Log.d(TAG, e2.getMessage());
 						callbackContext.error("Can not write a file");
 						return false;
 					}finally{
@@ -129,29 +136,29 @@ public class ExtractZipPlugin extends CordovaPlugin {
 					}
 				}
 			} catch (ZipException e1) {
-				System.out.println("ZIP exception");
-				System.out.println(e1.getMessage());
+				Log.d(TAG, "ZIP exception");
+				Log.d(TAG, e1.getMessage());
 				callbackContext.error("ZIP Exception.");
 				return false;
 			} catch (IOException e1) {
-				System.out.println("IO exception");
-				System.out.println(e1.getMessage());
+				Log.d(TAG, "IO exception");
+				Log.d(TAG, e1.getMessage());
 				callbackContext.error("IO Exception");
 				return false;
 			}
 
 		} catch (JSONException e) {
-			System.out.println("JSON exception");
+			Log.d(TAG, "JSON exception");
 			callbackContext.error("JSON exception");
-			System.out.println(e.getMessage());
+			Log.d(TAG, e.getMessage());
 			return false;
 		} catch (IOException e3) {
-			System.out.println("IO/ZIP exception");
-			System.out.println(e3.getMessage());
+			Log.d(TAG, "IO/ZIP exception");
+			Log.d(TAG, e3.getMessage());
 			callbackContext.error("IO/ZIP Exception");
 			return false;
 		}
-		System.out.println("All went fine.");
+		Log.d(TAG, "All went fine.");
 		callbackContext.success("Succesfully extracted.");
 		return true;
 	}
@@ -163,15 +170,19 @@ public class ExtractZipPlugin extends CordovaPlugin {
 	 */
 	private boolean extractBytearray(JSONArray args, CallbackContext callbackContext) {
 		try {
-			byte[] bArray = args.getString(0);
+			String zipBytes = args.getString(0);
 			String destDir =  args.getString(1);
+                        byte[] bArray = Base64.decode(zipBytes, Base64.DEFAULT);
 			ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(bArray));
 			ZipEntry entry;
+
+                        if(!destDir.endsWith("/"))
+                            destDir+= "/";
 			BufferedOutputStream os = null;
 			try {
 
                             while ((entry = zipStream.getNextEntry()) != null) {
-                                System.out.println("Unzipping: " + entry.getName());
+                                Log.d(TAG, "Unzipping: " + entry.getName());
 
                                 int size;
                                 byte[] buffer = new byte[2048];
@@ -191,8 +202,8 @@ public class ExtractZipPlugin extends CordovaPlugin {
                                         }
                                 }
                                 catch(IOException e2){
-                                        System.out.println("Can't write file.");
-                                        System.out.println(e2.getMessage());
+                                        Log.d(TAG, "Can't write file.");
+                                        Log.d(TAG, e2.getMessage());
                                         callbackContext.error("Can not write a file");
                                         return false;
                                 }finally{
@@ -205,29 +216,24 @@ public class ExtractZipPlugin extends CordovaPlugin {
                             }
 
 			} catch (ZipException e1) {
-				System.out.println("ZIP exception");
-				System.out.println(e1.getMessage());
+				Log.d(TAG, "ZIP exception");
+				Log.d(TAG, e1.getMessage());
 				callbackContext.error("ZIP Exception.");
 				return false;
 			} catch (IOException e1) {
-				System.out.println("IO exception");
-				System.out.println(e1.getMessage());
+				Log.d(TAG, "IO exception");
+				Log.d(TAG, e1.toString());
 				callbackContext.error("IO Exception");
 				return false;
 			}
 
 		} catch (JSONException e) {
-			System.out.println("JSON exception");
+			Log.d(TAG, "JSON exception");
 			callbackContext.error("JSON exception");
-			System.out.println(e.getMessage());
-			return false;
-		} catch (IOException e3) {
-			System.out.println("IO/ZIP exception");
-			System.out.println(e3.getMessage());
-			callbackContext.error("IO/ZIP Exception");
+			Log.d(TAG, e.getMessage());
 			return false;
 		}
-		System.out.println("All went fine.");
+		Log.d(TAG, "All went fine.");
 		callbackContext.success("Succesfully extracted.");
 		return true;
 	}
@@ -238,7 +244,7 @@ public class ExtractZipPlugin extends CordovaPlugin {
 			dirName = args.getString(0);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
+			Log.d(TAG, e.getMessage());
 			callbackContext.error(e.getMessage());
 			return false;
 		}
