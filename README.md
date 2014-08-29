@@ -1,20 +1,23 @@
 phonegap-plugin-ExtractZip
 ==========================
+Modified version of https://github.com/fiscal-cliff/phonegap-plugin-ExtractZip
 
 Now it supports Android and iOS within Phonegap 3.
 
 there are two methods:
+* extract(fileName, destination, successCB, failCB)
+* getTempDir(name, successCB, failCB)
 
-* extract(fileName, destination)
-* getTempDir(name)
+Added third method [ANDROID ONLY!]:
+* extractFromArray(byteArray, destination, successCB, failCB)
 
 Installing
 ======
 You may use phonegap CLI as follows:
 
 <pre>
-➜ phonegap local plugin add https://github.com/fiscal-cliff/phonegap-plugin-ExtractZip.git
-[phonegap] adding the plugin: https://github.com/fiscal-cliff/phonegap-plugin-ExtractZip.git
+➜ phonegap local plugin add https://github.com/shad0w82/phonegap-plugin-ExtractZip.git
+[phonegap] adding the plugin: https://github.com/shad0w82/phonegap-plugin-ExtractZip.git
 [phonegap] successfully added the plugin
 </pre>
 
@@ -24,18 +27,30 @@ Using
 		document.addEventListener('deviceready', onDeviceReady);
 		function onDeviceReady() {
 			document.body.style.background = 'red'
-			window.zip = cordova.require('cordova.plugin.ExtractZip.ExtractZip');
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', 'pathToZip.zip', true);
+			xhr.responseType = 'arraybuffer';
+			xhr.overrideMimeType('text/plain; charset=x-user-defined'); //fetch zip file as binary
+			xhr.onload = function(e) {
+				window.zipFileuInt8Array = new Uint8Array(this.response);
+				ExtractZip.extractFromArray(
+		                    _arrayBufferToBase64(zipFileuInt8Array),
+		                    "/sdcard/newDir/", 
+		                    function(s) { //Success 
+		                    },
+		                    function(s) { //Fail
+		                    }
+		                );
+		        };
 		}
-		function extractZip(fileName) {
-			zip.extract(fileName, '/sdcard/', win, fail);
-		}
-		function getTempDir(dirName) {
-			zip.getTempDir(dirName, win, fail);
-		}
-		function win(status) {
-			alert('Message: ' + status);
-		}
-		function fail(status) {
-			alert('Error: ' + status);
-		}
+		
+		function _arrayBufferToBase64( bytes ) {
+	            var binary = '';
+	            var len = bytes.byteLength;
+	            for (var i = 0; i < len; i++) {
+	                binary += String.fromCharCode( bytes[ i ] )
+	            }
+	            return window.btoa( binary );
+	        }
+		
 ```
