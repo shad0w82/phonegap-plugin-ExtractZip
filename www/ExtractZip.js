@@ -1,7 +1,6 @@
-cordova.define("cordova.plugin.ExtractZip.ExtractZip", function(require, exports, module) { 
+
 /*
  * @author Evgeniy Lukovsky
- * @contribute Gianfranco Caputo
  * */
 
 	var exec = require('cordova/exec');
@@ -26,5 +25,3 @@ cordova.define("cordova.plugin.ExtractZip.ExtractZip", function(require, exports
 
 	module.exports= new ExtractZip();
 
-
-});
