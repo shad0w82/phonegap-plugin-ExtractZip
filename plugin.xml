@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-           id="cordova.plugin.ExtractZip"
+           id="cordova.plugin.ExtractZipPlugin"
       version="0.1.0">
     <name>ExtractZip</name>
 
-    <js-module src="www/ExtractZip.js" name="ExtractZip">
-        <clobbers target="ExtractZip" />
+    <js-module src="www/ExtractZip.js" name="ExtractZipPlugin">
+        <clobbers target="ExtractZipPlugin" />
     </js-module>
 
     <!-- android -->
@@ -20,7 +20,7 @@
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
 
-	<source-file src="src/android/ExtractZipPlugin.java" target-dir="src/org/apache/cordova/plugin/ExtractZip" />
+	<source-file src="src/android/ExtractZipPlugin.java" target-dir="src/org/apache/cordova/plugin/ExtractZipPlugin" />
       
      </platform>
      
