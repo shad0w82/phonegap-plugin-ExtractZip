@@ -1,4 +1,3 @@
-cordova.define("cordova.plugin.ExtractZip.ExtractZipPlugin", function(require, exports, module) {
 /*
  * @author Evgeniy Lukovsky
  * */
@@ -24,6 +23,3 @@ cordova.define("cordova.plugin.ExtractZip.ExtractZipPlugin", function(require, e
 	};
 
 	module.exports= new ExtractZip();
-
-
-});
