@@ -5,7 +5,7 @@
       version="0.1.0">
     <name>ExtractZip</name>
 
-    <js-module src="www/ExtractZip.js" name="ExtractZip">
+    <js-module src="www/ExtractZip.js" name="ExtractZipPlugin">
         <clobbers target="ExtractZip" />
     </js-module>
 
